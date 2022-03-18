@@ -14,7 +14,7 @@ def calculate_ei(d, d1, d2, pmin, Rz1, Rz2, E1, E2, v1, v2, ES):
 
 def find_shaft_tolerance(ei, eiRow):
     wb = load_workbook(
-        filename=r"C:\Users\user\VisualStudioCode\push-in_calculations\tolerances.xlsx")
+        filename=r"tolerances.xlsx")
     for i in range(2, 6):
         sheet = wb[str(i)]
         for row in sheet.iter_rows(min_row=eiRow, max_row=eiRow, min_col=4, max_col=14):
@@ -28,7 +28,7 @@ def find_shaft_tolerance(ei, eiRow):
 
 def find_ES(d, holeTolerance):
     wb = load_workbook(
-        filename=r"C:\Users\user\VisualStudioCode\push-in_calculations\tolerances.xlsx")
+        filename=r"tolerances.xlsx")
     sheet = wb["1"]
     switch = {'H6': 'D', 'H7': 'E', 'H8': 'F', 'H9': 'G',
               'H10': 'H', 'H11': 'I', 'H12': 'J', 'H13': 'K', 'H14': 'L'}
@@ -60,9 +60,9 @@ def calculate_load(d, ln, mi, loadType, P, Ms, Mg):
 
 
 def get_material_data(userMaterial):
-    with open(r"C:\Users\user\VisualStudioCode\push-in_calculations\materials.txt") as materials:
+    with open(r"materials.txt") as materials:
         materialListLength = len(materials.readlines())
-    with open(r"C:\Users\user\VisualStudioCode\push-in_calculations\materials.txt") as materials:
+    with open(r"materials.txt") as materials:
         for _ in range(materialListLength):
             materialData = materials.readline().split()
             if materialData[0] == str(userMaterial):
@@ -74,31 +74,31 @@ def get_material_data(userMaterial):
 
 
 def post_material_data(newMaterialName, newMaterialYoungModule, newMaterialPoissonRatio):
-    with open(r"C:\Users\user\VisualStudioCode\push-in_calculations\materials.txt") as materials:
+    with open(r"materials.txt") as materials:
         materialList = (materials.readlines())
         materialCheckList = [i.split(" ") for i in materialList]
         flatMaterialCheckList = [
             item for sublist in materialCheckList for item in sublist]
         if newMaterialName not in flatMaterialCheckList:
-            with open(r"C:\Users\user\VisualStudioCode\push-in_calculations\materials.txt", mode="a") as materials:
+            with open(r"materials.txt", mode="a") as materials:
                 materials.write('\n' + str(newMaterialName) + " " +
                                 str(newMaterialYoungModule) + " " + str(newMaterialPoissonRatio))
         return get_material_data(newMaterialName)
 
 
-d = float(input("Type push-in connection diameter[1-500][mm]: "))
+d = float(input("Push-in connection diameter[1-500][mm]: "))
 while (d < 1) or (d > 500):
     print("Diameter out of range, please type again")
     d = float(input("Type push-in connection diameter[1-500][mm]: "))
 d = d / 1000  # converts mm into m
-d1 = float(input("Type shaft axial hole diameter[mm]: "))
+d1 = float(input("Shaft axial hole diameter[mm]: "))
 while (d1 < 0) or (d1 >= (d * 1000)):
     print("Diameter out of range, please type again")
-    d1 = float(input("Type shaft axial hole diameter[mm]: "))
+    d1 = float(input("Shaft axial hole diameter[mm]: "))
 d1 = d1 / 1000  # converts mm into m
-d2 = float(input("Type hub external diameter[mm]: "))
+d2 = float(input("Hub external diameter[mm]: "))
 d2 = d2 / 1000  # converts mm into m
-ln = float(input("Type connection length[mm]: "))
+ln = float(input("Connection length[mm]: "))
 ln = ln / 1000  # converts mm into m
 Rz1 = 0.4
 Rz1 = Rz1 / (10**6)  # converts um into m
@@ -109,28 +109,28 @@ hubMaterial = get_material_data(input("Hub material: "))
 ES = find_ES(
     d * 1000, holeTolerance=(input("Hub hole tolerance:")).upper())
 mi = float(input("Friction coefficient between " +
-           str(shaftMaterial[0] + " " "and" + " " + str(hubMaterial[0]))))
+           str(shaftMaterial[0] + " " "and" + " " + str(hubMaterial[0] + " "))))
 
 loadDict = {'1': 'axial', '2': 'twisting_moment', '3': 'axial_and_twisting_moment',
             '4': 'bending_moment'}
 loadChoice = input(
-    'Choose load type: 1 - axial\n 2 - twisting moment\n 3 - axial and twisting moment\n 4 - bending moment  ')
+    'Choose load type: \n 1 - axial\n 2 - twisting moment\n 3 - axial and twisting moment\n 4 - bending moment  ')
 if loadChoice == "1":
-    P = float(input("Type the force [N]: "))
+    P = float(input("Force [N]: "))
     Ms = 0
     Mg = 0
 elif loadChoice == "2":
     P = 0
-    Ms = float(input("Type the torque [N*m]: "))
+    Ms = float(input("Torque [N*m]: "))
     Mg = 0
 elif loadChoice == "3":
-    P = float(input("Type the force [N*m]: "))
-    Ms = float(input("Type the torque [N*m]: "))
+    P = float(input("Force [N*m]: "))
+    Ms = float(input("Torque [N*m]: "))
     Mg = 0
 elif loadChoice == "4":
     P = 0
     Ms = 0
-    Mg = float(input("Type the torque [N*m]: "))
+    Mg = float(input("Torque [N*m]: "))
 
 pmin = calculate_load(d, ln, mi, loadDict[loadChoice], P, Ms, Mg)
 ei = calculate_ei(d, d1, d2, pmin, Rz1, Rz2,
