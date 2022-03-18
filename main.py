@@ -13,8 +13,8 @@ def calculate_ei(d, d1, d2, pmin, Rz1, Rz2, E1, E2, v1, v2, ES):
 
 
 def find_shaft_tolerance(ei, eiRow):
-    wb = load_workbook(
-        filename=r"tolerances.xlsx")
+    wb = load_workbook(filename=r"tolerances.xlsx")
+
     for i in range(2, 6):
         sheet = wb[str(i)]
         for row in sheet.iter_rows(min_row=eiRow, max_row=eiRow, min_col=4, max_col=14):
