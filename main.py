@@ -86,58 +86,63 @@ def post_material_data(newMaterialName, newMaterialYoungModule, newMaterialPoiss
         return get_material_data(newMaterialName)
 
 
-d = float(input("Push-in connection diameter[1-500][mm]: "))
-while (d < 1) or (d > 500):
-    print("Diameter out of range, please type again")
-    d = float(input("Type push-in connection diameter[1-500][mm]: "))
-d = d / 1000  # converts mm into m
-d1 = float(input("Shaft axial hole diameter[mm]: "))
-while (d1 < 0) or (d1 >= (d * 1000)):
-    print("Diameter out of range, please type again")
+def main():
+
+    d = float(input("Push-in connection diameter[1-500][mm]: "))
+    while (d < 1) or (d > 500):
+        print("Diameter out of range, please type again")
+        d = float(input("Type push-in connection diameter[1-500][mm]: "))
+    d = d / 1000  # converts mm into m
     d1 = float(input("Shaft axial hole diameter[mm]: "))
-d1 = d1 / 1000  # converts mm into m
-d2 = float(input("Hub external diameter[mm]: "))
-d2 = d2 / 1000  # converts mm into m
-ln = float(input("Connection length[mm]: "))
-ln = ln / 1000  # converts mm into m
-Rz1 = 0.4
-Rz1 = Rz1 / (10**6)  # converts um into m
-Rz2 = 0.4
-Rz2 = Rz2 / (10**6)  # converts um into m
-shaftMaterial = get_material_data(input("Shaft material: "))
-hubMaterial = get_material_data(input("Hub material: "))
-ES = find_ES(
-    d * 1000, holeTolerance=(input("Hub hole tolerance:")).upper())
-mi = float(input("Friction coefficient between " +
-           str(shaftMaterial[0] + " " "and" + " " + str(hubMaterial[0] + " "))))
+    while (d1 < 0) or (d1 >= (d * 1000)):
+        print("Diameter out of range, please type again")
+        d1 = float(input("Shaft axial hole diameter[mm]: "))
+    d1 = d1 / 1000  # converts mm into m
+    d2 = float(input("Hub external diameter[mm]: "))
+    d2 = d2 / 1000  # converts mm into m
+    ln = float(input("Connection length[mm]: "))
+    ln = ln / 1000  # converts mm into m
+    Rz1 = 0.4
+    Rz1 = Rz1 / (10**6)  # converts um into m
+    Rz2 = 0.4
+    Rz2 = Rz2 / (10**6)  # converts um into m
+    shaftMaterial = get_material_data(input("Shaft material: "))
+    hubMaterial = get_material_data(input("Hub material: "))
+    ES = find_ES(
+        d * 1000, holeTolerance=(input("Hub hole tolerance:")).upper())
+    mi = float(input("Friction coefficient between " +
+                     str(shaftMaterial[0] + " " "and" + " " + str(hubMaterial[0] + " "))))
 
-loadDict = {'1': 'axial', '2': 'twisting_moment', '3': 'axial_and_twisting_moment',
-            '4': 'bending_moment'}
-loadChoice = input(
-    'Choose load type: \n 1 - axial\n 2 - twisting moment\n 3 - axial and twisting moment\n 4 - bending moment  ')
-if loadChoice == "1":
-    P = float(input("Force [N]: "))
-    Ms = 0
-    Mg = 0
-elif loadChoice == "2":
-    P = 0
-    Ms = float(input("Torque [N*m]: "))
-    Mg = 0
-elif loadChoice == "3":
-    P = float(input("Force [N*m]: "))
-    Ms = float(input("Torque [N*m]: "))
-    Mg = 0
-elif loadChoice == "4":
-    P = 0
-    Ms = 0
-    Mg = float(input("Torque [N*m]: "))
+    loadDict = {'1': 'axial', '2': 'twisting_moment', '3': 'axial_and_twisting_moment',
+                '4': 'bending_moment'}
+    loadChoice = input(
+        'Choose load type: \n 1 - axial\n 2 - twisting moment\n 3 - axial and twisting moment\n 4 - bending moment  ')
+    if loadChoice == "1":
+        P = float(input("Force [N]: "))
+        Ms = 0
+        Mg = 0
+    elif loadChoice == "2":
+        P = 0
+        Ms = float(input("Torque [N*m]: "))
+        Mg = 0
+    elif loadChoice == "3":
+        P = float(input("Force [N*m]: "))
+        Ms = float(input("Torque [N*m]: "))
+        Mg = 0
+    elif loadChoice == "4":
+        P = 0
+        Ms = 0
+        Mg = float(input("Torque [N*m]: "))
 
-pmin = calculate_load(d, ln, mi, loadDict[loadChoice], P, Ms, Mg)
-ei = calculate_ei(d, d1, d2, pmin, Rz1, Rz2,
-                  float(shaftMaterial[1]), float(hubMaterial[1]),
-                  float(shaftMaterial[2]), float(hubMaterial[2]),
-                  (ES[0])/(10**6))
-shaftTolerance = find_shaft_tolerance(ei, ES[1])
+    pmin = calculate_load(d, ln, mi, loadDict[loadChoice], P, Ms, Mg)
+    ei = calculate_ei(d, d1, d2, pmin, Rz1, Rz2,
+                      float(shaftMaterial[1]), float(hubMaterial[1]),
+                      float(shaftMaterial[2]), float(hubMaterial[2]),
+                      (ES[0])/(10**6))
+    shaftTolerance = find_shaft_tolerance(ei, ES[1])
 
-print("shaft tolerance = " + str(shaftTolerance))
-print("ei[um] = " + str(ei))
+    print("shaft tolerance = " + str(shaftTolerance))
+    print("ei[um] = " + str(ei))
+
+
+main()
